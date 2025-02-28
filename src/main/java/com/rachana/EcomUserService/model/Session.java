@@ -1,9 +1,6 @@
 package com.rachana.EcomUserService.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +16,8 @@ public class Session extends BaseModel{
     private Date expiringAt;
     private Date loginTime;
     @ManyToOne
-    private List<User> users;
+    @JoinColumn(name = "user_id")
+    private User user;
     @Enumerated(EnumType.ORDINAL)
     private SessionStatus sessionStatus;
 }

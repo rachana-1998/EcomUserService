@@ -7,14 +7,15 @@ import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
-@Entity
+@Entity(name="EcommUser")
 public class User extends BaseModel{
 
     private String email;
     private String password;
     @ManyToMany
-    private HashSet<Role> roles =new HashSet<>();
+    private Set<Role> roles =new HashSet<>();
 }
