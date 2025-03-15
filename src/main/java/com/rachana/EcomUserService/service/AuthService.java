@@ -1,6 +1,10 @@
 package com.rachana.EcomUserService.service;
 
 import ch.qos.logback.core.testUtil.RandomUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rachana.EcomUserService.config.KafkaProducerConfig;
+import com.rachana.EcomUserService.dto.SendEmailDTO;
 import com.rachana.EcomUserService.dto.UserDTO;
 import com.rachana.EcomUserService.exception.InvalidCredientialException;
 import com.rachana.EcomUserService.exception.InvalidTokenException;
@@ -39,20 +43,30 @@ public class AuthService {
     private final SessionRepository sessionRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ModelMapper modelMapper;
+    private final KafkaProducerConfig kafkaProducerConfig;
+    private ObjectMapper objectMapper;
 
-    public AuthService(UserRepository userRepository, SessionRepository sessionRepository, BCryptPasswordEncoder bCryptPasswordEncoder, ModelMapper modelMapper, SecurityFilterChain securityFilterChain) {
+    public AuthService(UserRepository userRepository, SessionRepository sessionRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
+                       ModelMapper modelMapper, KafkaProducerConfig kafkaProducerConfig, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.modelMapper = modelMapper;
+        this.kafkaProducerConfig = kafkaProducerConfig;
+        this.objectMapper = objectMapper;
     }
 
-    public UserDTO signUp(String email, String password){
+    public UserDTO signUp(String email, String password) throws JsonProcessingException {
         User user= new User();
         user.setEmail(email);
         user.setPassword(bCryptPasswordEncoder.encode(password));
-        userRepository.save(user);
-         return null;
+        SendEmailDTO sendEmailDTO=new SendEmailDTO();
+        sendEmailDTO.setTo(user.getEmail());
+        sendEmailDTO.setFrom("rachana1005.98@gmail.com");
+        sendEmailDTO.setBody("welcome to eccomerce");
+        sendEmailDTO.setSubject("sign up successfully");
+        kafkaProducerConfig.sendMessage("signUp",objectMapper.writeValueAsString(sendEmailDTO));
+         return modelMapper.map(userRepository.save(user),UserDTO.class);
     }
 
 

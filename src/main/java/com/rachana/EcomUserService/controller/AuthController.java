@@ -1,6 +1,7 @@
 package com.rachana.EcomUserService.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rachana.EcomUserService.dto.LoginRequestDTO;
 import com.rachana.EcomUserService.dto.SignUpRequestDTO;
 import com.rachana.EcomUserService.dto.UserDTO;
@@ -26,13 +27,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UserDTO>  login(@RequestBody LoginRequestDTO request){
-        return authService.login(request.getEmail(),request.getPassword());
+         UserDTO user= authService.login(request.getEmail(),request.getPassword()).getBody();
+         return ResponseEntity.ok(user);
     }
 
      @PostMapping("/signUp")
-    public ResponseEntity<UserDTO> signUp(@RequestBody SignUpRequestDTO requestDTO){
+    public ResponseEntity<UserDTO> signUp(@RequestBody SignUpRequestDTO requestDTO) throws JsonProcessingException {
         UserDTO userDTO=authService.signUp(requestDTO.getEmail(),requestDTO.getPassword());
-        return new ResponseEntity<>(userDTO,HttpStatus.OK);
+        return ResponseEntity.ok(userDTO);
      }
 
      @GetMapping("/session")
