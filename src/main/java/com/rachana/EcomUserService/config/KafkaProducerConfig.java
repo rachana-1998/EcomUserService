@@ -9,11 +9,13 @@ public class KafkaProducerConfig {
 
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    public KafkaProducerConfig(KafkaTemplate<String, String> kafkaTemplate) {
+    public KafkaProducerConfig(KafkaTemplate<String, String> kafkaTemplate)
+    {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendMessage(String topicName ,String msg) {
+    public void sendMessage(String topicName ,String msg)
+    {
         kafkaTemplate.send(topicName, msg);
     }
 }
